@@ -1,0 +1,28 @@
+{
+  "name": "deck-handler-3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/othelarian/deck-handler-3.git"
+  },
+  "author": "othelarian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/othelarian/deck-handler-3/issues"
+  },
+  "homepage": "https://github.com/othelarian/deck-handler-3#readme",
+  "devDependencies": {
+    "bach": "^2.0.1",
+    "chokidar": "^3.5.3",
+    "coffeescript": "^2.7.0",
+    "fs-extra": "^11.1.0",
+    "livescript": "^1.6.0",
+    "pug": "^3.0.2",
+    "sass": "^1.57.1"
+  }
+}
