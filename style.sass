@@ -1,4 +1,132 @@
+div
+  margin: 7px auto
 
-body
-  background: blue
+h1 span
+  display: block
+  text-align: center
+
+h2
+  margin: 3px auto
+  margin-bottom: 6px
+  text-align: center
+
+textarea
+  width: 310px
+  height: 150px
+  max-width: 310px
+  max-height: 150px
+  min-width: 200px
+  min-height: 100px
+
+.deck-hand
+  border: solid 1px gray
+  width: fit-content
+  padding: 3px
+
+  input
+    border: none
+    border-bottom: solid 1px black
+
+.btn-lst button
+  margin: auto 4px
+
+.card
+  width: 90px
+  height: 140px
+  border: solid 1px black
+  border-radius: 6px
+  margin: 2px
+
+  &.back
+    font-weight: bold
+    font-size: 30px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-direction: column
+
+  &.front
+    display: flex
+    flex-direction: column
+
+    .card-top
+      height: 20px
+      margin: 0 0 0 5px
+      text-align: left
+
+    .card-body
+      display: flex
+      justify-content: center
+      align-items: center
+      flex-grow: 2
+      font-size: 30px
+
+    .card-bottom
+      height: 20px
+      margin: 0 5px 0 0
+      text-align: right
+
+  &.plh
+    border: solid 1px #ccc
+    display: flex
+    justify-content: center
+    align-items: center
+    color: #888
+
+.err
+  font-weight: bold
+  color: red
+  display: none
+
+.screen
+  text-align: center
+  display: none
+  max-width: 360px
+  margin: 10px auto
+
+#deck-create-hand-nb
+  display: inline-block
+  width: 60px
+
+#deck-create-river
+  width: 17px
+  height: 17px
+
+#deck-create-river-form
+  display: flex
+  justify-content: center
+  align-items: center
+
+#deck-load-menu
+  input
+    margin: 5px auto
+
+#deck-main-menu
+  div > button
+    display: block
+    margin: 10px auto
+
+#deck-play-sock
+  display: flex
+  gap: 10px
+  justify-content: center
+  align-items: center
+
+#deck-veil
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  background: #fffa
+  display: none
+
+  & .screen
+    max-width: 300px
+    padding: 7px
+    box-sizing: border-box
+    background: white
+    border: solid 1px black
+    border-radius: 11px
+    margin-top: 20px
 

@@ -1,0 +1,20 @@
+svg(
+  xmlns='http://www.w3.org/2000/svg'
+  width='200'
+  height='200'
+  viewbox='0 0 200 200'
+)
+  style.
+    .logo_rect {fill:white;stroke:black;stroke-width:1;}
+    .logo_text {font-size:40px;font-weight:bold;}
+  defs
+    rect(id='card',x='0',y='0',rx='10',width='90',height='130',class='logo_rect')
+  g(transform='translate(10,52),rotate(-30)')
+    use(href='#card')
+  g(transform='translate(110,20),rotate(20)')
+    use(href='#card')
+  g(transform='translate(50,50)')
+    use(href='#card')
+  text(x='81',y='90',class='logo_text') D
+  text(x='80',y='125',class='logo_text') H
+  text(x='85',y='160',class='logo_text') 3

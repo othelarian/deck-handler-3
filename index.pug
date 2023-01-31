@@ -2,15 +2,149 @@ doctype html
 html
   head(lang=pwa.lang)
     title deck handler, the third
-  body
-    h1 Deck Handler, the Third
-    //
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+    meta(name='description', content=pwa.description)
+    link(rel='stylesheet', href=app.style.out)
+    link(rel='icon', href='icons/icon_128.png')
+    if github
+      meta(name='theme-color', content=pwa.theme_color)
+      link(rel='manifest', href=(pwa.name + '.webmanifest'))
+      link(rel='apple-touch-icon', href='icons/icon_192.png')
+      script(type='text/javascript', src=sw.init.out)
+    script(type='text/javascript', src=app.code.out)
+  body(onload='initDeck()')
     #deck-main-menu.screen
-      h2 Main Menu
+      h1
+        span Deck Handler
+        span The Third
+      div
+        //
+        // TODO: direct access to play (v0.1.0)
+        //
+        //button(onclick="DH.action('create')") Create a game
+        button(onclick="DH.action('play')") Play
+        //
+        // TODO: load disabled for the 0.1.0
+        //
+        button(onclick="DH.action('load')",disabled) Load a game
+      include logo.pug
+      div= version
+    #deck-load-menu.screen
+      h2 DH3 - load a game
+      input#deck-load-file(type='file')
+      textarea#deck-load-text
+      #deck-load-error.err Can't load the game's data!
+      div
+        button(onclick="DH.action('cancel')") Cancel
+        span &nbsp;
+        button(onclick="DH.action('load')") Load
+    #deck-create-menu.screen
+      h2 DH3 - create a new game
+      div
+        label(for='deck-create-type') Type of deck:
+        br
+        select#deck-create-type(onchange="DH.action('update')")
+          option(value='c') 52-card deck
+          option(value='cj', selected) 52-card deck + jokers
+          option(value='s') 32-card deck
+          option(value='sj') 32-card deck + jokers
+          option(value='t') Tarot (78 cards)
+          option(value='p') Triumphs (Only 22 tarot triumphs)
+          option(value='u') Custom
+      #deck-create-custom(style='display:none')
+        label(for='deck-create-custom-text') Custom deck:
+        textarea#deck-create-custom-text ['card 1', 'card 2']
+        #deck-create-custom-err.err Can't validate the custom deck!
+      #deck-create-river-form
+        label(for='deck-create-river') River?
+        input#deck-create-river(type='checkbox')
+      div
+        label Number of hands:
+      div
+        button#deck-create-hm(onclick="DH.action('hm')",disabled) -
+        span#deck-create-hand-nb 1
+        button#deck-create-hp(onclick="DH.action('hp')") +
+      #deck-create-hands
+        label Hands:
+        .deck-hand
+          input#deck-create-hand-0(maxlength='20',width='27',value='hand #1')
+          button(onclick="DH.action('delete',0)") X
+      div
+        button(onclick="DH.action('cancel')") Cancel
+        span &nbsp;
+        button(onclick="DH.action('create')") Create
+    #deck-play-menu.screen
+      h2 DH3 - Play
       //
-      div plop
+      // TODO
       //
+      .btn-lst
+        button(onclick="DH.action('quit')") Quit
+        //
+        // TODO: play menu (save, back, etc)
+        //
+        button(disabled) Save
+        button(disabled) Reset
+        //
+      //
+      #deck-play-sock
+        .card.back
+          span D
+          span H
+          span 3
+          button(onclick="DH.action('draw')") Draw
+        #deck-play-dispile.card.plh discard<br/>pile
+          //
+          // TODO
+          //
+          //
+      //
+      //
+      //
+    #deck-save-menu.screen
+      h3 DH3 - save the game
+      .btn-lst
+        button(onclick="DH.action('back')") Back
+        button(onclick="DH.action('dl')") Download
+        button(onclick="DH.action('copy')") Copy
+      textarea#deck-save-text
+    #deck-custom-menu.screen
+      h3 DH3 - custom deck
+      //
+      // TODO
+      //
+    #deck-veil
+      #deck-veil-play-quit.screen
+        h2 Are you sure you want to quit the game?
+        .btn-lst
+          button(onclick="DH.action('quityes')") Yes
+          button(onclick="DH.action('quitno')") No
+
+
     //
+    // TODO: GLOBAL TODO LIST:
     //
-    // TODO
+    // TODO: v0.1.0 => get a random 52-card deck
+    // TODO: v0.1.0 => draw a card
+    // TODO: v0.1.0 => shuffle all the deck
+    //
+    // TODO: v0.2.0 => get the river to stock card
+    // TODO: v0.2.0 => discard system
+    // TODO: v0.2.0 => shuffle discard pile
+    //
+    // TODO: v0.3.0 => custom deck screen (like hands)
+    //
+    // TODO: create => handle hands list
+    // TODO: loading from a file
+    // TODO: loading from a text
+    // TODO: data for decks
+    // TODO: save system
+    // TODO: save => enerate download
+    // TODO: save => copy in the clipboard
+    // TODO: creation system
+    // TODO: shuffle system
+    // TODO: draw system
+    // TODO: hands system
+    // TODO: undo/redo system
     //

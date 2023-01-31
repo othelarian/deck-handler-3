@@ -1,6 +1,6 @@
 {
   "name": "deck-handler-3",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "card handler, with hands and river, and saving capacity",
   "main": "index.js",
   "scripts": {
