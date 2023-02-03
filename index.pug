@@ -80,25 +80,32 @@ html
       // TODO
       //
       .btn-lst
+        span |
         button(onclick="DH.action('quit')") Quit
+        button(onclick="DH.action('save')") Save
+        button(onclick="DH.action('reset')") Reset
+        span |
         //
-        // TODO: play menu (save, back, etc)
+        // TODO
         //
-        button(disabled) Save
-        button(disabled) Reset
-        //
-      //
+        button(disabled) Undo
+        button(disabled) Redo
+        span |
       #deck-play-sock
-        .card.back
+        .btn-col.no-margin
+          button#deck-play-draw(onclick="DH.action('draw')") Draw
+          button(disabled) Shuffle<br/>only pot
+        #deck-play-pot.card.back
           span D
           span H
           span 3
-          button(onclick="DH.action('draw')") Draw
         #deck-play-dispile.card.plh discard<br/>pile
+        .btn-col.no-margin
+          button(onclick="DH.action('shuffleall')") Shuffle<br/>all
           //
           // TODO
           //
-          //
+          button#deck-play-shuffle-dis(disabled) Shuffle<br/>only discarded
       //
       //
       //
@@ -120,6 +127,25 @@ html
         .btn-lst
           button(onclick="DH.action('quityes')") Yes
           button(onclick="DH.action('quitno')") No
+      #deck-veil-play-reset.screen
+        h2 Are you sure you want to reset?
+        div The reset will recreate a entire new game with the same configuration
+        //
+        // TODO
+        //
+        div (Not working yet)
+        //
+        .btn-lst
+          button(onclick="DH.action('resetyes')") Yes
+          button(onclick="DH.action('resetno')") No
+      #deck-veil-save-copy.screen
+        h2 Save copied to the clipboard!
+        .btn-lst
+          button(onclick="DH.action('copyok')") Ok
+      #deck-veil-save-dl.screen
+        h2 Download in progress, check your dl manager!
+        .btn-lst
+          button(onclick="DH.action('dlok')") Ok
 
 
     //
@@ -139,12 +165,13 @@ html
     // TODO: loading from a file
     // TODO: loading from a text
     // TODO: data for decks
-    // TODO: save system
-    // TODO: save => enerate download
-    // TODO: save => copy in the clipboard
     // TODO: creation system
-    // TODO: shuffle system
+    // TODO: shuffle only pot
+    // TODO: shuffle only discard
+    // TODO: shuffle all
     // TODO: draw system
     // TODO: hands system
     // TODO: undo/redo system
+    // TODO: pick a card in the pot, or in the discard pile
+    // TODO: add color to the colors (yellow for triumph)
     //

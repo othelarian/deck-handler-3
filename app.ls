@@ -1,6 +1,13 @@
 # UTILS ######################################
 
-qSel = (s, a = no) ->
+c-elt = (tag, attrs, txt, html) ->
+  elt = document.createElement tag
+  for k, v of attrs then elt.setAttribute k, v
+  if txt? then elt.innerText = txt
+  else if html? then elt.innerHTML = html
+  elt
+
+q-sel = (s, a = no) ->
   if a then document.querySelectorAll s
   else document.querySelector s
 
@@ -16,18 +23,24 @@ deck-creation = !->
   #
   # TODO: for now only trigger a 52-card deck creation (v0.1.0)
   #
-  deck = gen-deck \c
+  deck = gen-deck \s
   rnd = rand-deck deck.length
   #
-  DH.game = {t: 'c', d: deck, r: rnd, m: [{t: \rnd, v: rnd}]}
+  DH.store = {d: deck, s: deck, p: 0}
+  DH.game = {t: 'c', r: rnd, m: [{t: \rnd, v: rnd}]}
+  #
+  # TODO: if \u (custom) then add d: deck to DH.game
   #
   #
-  dispile = qSel '#deck-play-dispile'
+  dispile = q-sel '#deck-play-dispile'
   unless dispile.classList.contains \plh
     dispile.classList.add \plh
     dispile.innerHTML = 'discard<br/>pile'
   #
   # TODO: inform about the state of the sock
+  #
+  #
+  qSel '#deck-play-draw' .removeAttribute 'disabled'
   #
   DH.show \play
 
@@ -44,7 +57,7 @@ gen-deck = (type) ->
     base
 
 hide-errs = (s) !->
-  for err in qSel "\#deck-#{s}-menu .err", yes then err.style.display = \none
+  for err in q-sel "\#deck-#{s}-menu .err", yes then err.style.display = \none
 
 insert-card = (v, s) !->
   txt = switch DH.game.t
@@ -68,7 +81,55 @@ insert-card = (v, s) !->
       #
       'not ready'
       #
-  qSel s .innerHTML = ["<div class='card-#c'>#txt</div>" for c in ['top','body','bottom']].join('')
+  q-sel s .innerHTML = ["<div class='card-#c'>#txt</div>" for c in ['top','body','bottom']].join('')
+
+play-actions = (act) !-> switch act
+  when \quit then DH.veil 'play-quit' on
+  when \quitno then DH.veil 'play-quit' off
+  when \quityes
+    DH.game = void
+    DH.show \main
+    DH.veil 'play-quit' off
+  when \save
+    q-sel '#deck-save-text' .value = JSON.stringify DH.game
+    DH.show \save
+  when \draw
+    dispile = q-sel '#deck-play-dispile'
+    if dispile.classList.contains \plh
+      dispile.classList
+        ..remove \plh
+        ..add \front
+    c =
+      if DH.store.s.length is 1 then
+        qSel '#deck-play-pot'
+          ..classList.remove \back
+          ..classList.add \plh
+        qSel '#deck-play-draw' .setAttribute 'disabled', true
+        DH.store.s[0]
+      else
+        c = DH.store.s[DH.game.r[DH.store.p]]
+        DH.store.p += 1
+        DH.game.m.push {t: \draw}
+        DH.store.s = DH.store.s.filter (e) ~> e != c
+        c
+    insert-card c, '#deck-play-dispile'
+  when \reset then DH.veil 'play-reset' on
+  when \resetno then DH.veil 'play-reset' off
+  when \resetyes
+    #
+    # TODO: handle the reset
+    #
+    console.log 'reset (not ready)'
+    #
+    DH.veil 'play-reset' off
+  when \shuffleall
+    #
+    # TODO
+    #
+    console.log 'not ready yet'
+    #
+    #
+    #
 
 rand-deck = (size) -> [Math.floor(Math.random! * top) for top from size to 2 by -1]
 
@@ -96,7 +157,7 @@ Actions =
       #
       # TODO
       #
-      console.log(qSel '#deck-create-type' .value)
+      console.log(q-sel '#deck-create-type' .value)
       #
   load: (act) !-> switch act
     when \cancel
@@ -113,60 +174,38 @@ Actions =
     when \create then DH.show \create
     when \load then DH.show \load
     when \play then deck-creation! # TODO: temporary
-  play: (act) !-> switch act
-    when \quit then DH.veil 'play-quit' on
-    when \quitno then DH.veil 'play-quit' off
-    when \quityes
-      DH.game = void
-      DH.show \main
-      DH.veil 'play-quit' off
-    when \save
-      #
-      # TODO
-      #
-      void
-      #
-    when \draw
-      #
-      # TODO
-      #
-      console.log 'draw'
-      #
-      dispile = qSel '#deck-play-dispile'
-      if dispile.classList.contains \plh
-        dispile.classList.remove \plh
-        dispile.classList.add \front
-      #
-      insert-card \S2 '#deck-play-dispile'
-      #
-    when \shuffle then console.log 'not ready yet' # TODO
+  play: play-actions
   save: (act) !-> switch act
     when \back then DH.show \play
-    when \dl
-      #
-      # TODO
-      #
-      void
-      #
     when \copy
-      #
-      # TODO
-      #
-      void
-      #
+      navigator.clipboard.writeText q-sel('#deck-save-text').value
+      DH.veil 'save-copy' on
+    when \copyok then DH.veil 'save-copy' off
+    when \dl
+      attrs =
+        href: 'data:text/plain;charset=utf-8,'+(q-sel '#deck-save-text' .value)
+        download: 'dh3_save.json'
+      a = c-elt \a, attrs
+      a.style.display = \none
+      document.body.appendChild a
+      a.click!
+      document.body.removeChild a
+      DH.veil 'save-dl' on
+    when \dlok then DH.veil 'save-dl' off
 
 DH =
   action: void
   game: void
   past: ''
   show: (n) !->
-    if DH.past isnt '' then qSel "\#deck-#{DH.past}-menu" .style.display = \none
+    if DH.past isnt '' then q-sel "\#deck-#{DH.past}-menu" .style.display = \none
     DH.action = Actions[n]
-    qSel "\#deck-#{n}-menu" .style.display = \block
+    q-sel "\#deck-#{n}-menu" .style.display = \block
     DH.past = n
+  store: void
   veil: (n,active) !->
-    qSel '#deck-veil' .style.display = if active then \block else \none
-    qSel "\#deck-veil-#n" .style.display = if active then \block else \none
+    q-sel '#deck-veil' .style.display = if active then \block else \none
+    q-sel "\#deck-veil-#n" .style.display = if active then \block else \none
   #
   # TODO: remove after test
   #
@@ -182,4 +221,3 @@ init-deck = !->
 
 window.DH = DH
 window.init-deck = init-deck
-
