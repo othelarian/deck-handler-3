@@ -15,19 +15,18 @@ q-sel = (s, a = no) ->
 
 deck-creation = !->
   hide-errs \create
+  dt = qSel '#deck-create-type' .value
+  rv = qSel '#deck-create-river' .checked
   #
-  # TODO: get the deck datas
   #
   # TODO: validate the custom deck if needed
   #
   #
-  # TODO: for now only trigger a 52-card deck creation (v0.1.0)
+  pot = gen-deck dt
+  rnd = rand-deck pot.length
   #
-  deck = gen-deck \s
-  rnd = rand-deck deck.length
-  #
-  DH.store = {d: deck, s: deck, p: 0}
-  DH.game = {t: 'c', r: rnd, m: [{t: \rnd, v: rnd}]}
+  DH.store = {p: pot, s: pot, i: 0, rv: []}
+  DH.game = {t: dt, rv: rv, hds: no, r: rnd, m: [{t: \rnd, v: rnd}]}
   #
   # TODO: if \u (custom) then add d: deck to DH.game
   #
@@ -41,7 +40,7 @@ deck-creation = !->
   #
   #
   qSel '#deck-play-draw' .removeAttribute 'disabled'
-  #
+  qSel '#deck-play-dispile' .setAttribute \style ''
   DH.show \play
 
 gen-deck = (type) ->
@@ -59,29 +58,42 @@ gen-deck = (type) ->
 hide-errs = (s) !->
   for err in q-sel "\#deck-#{s}-menu .err", yes then err.style.display = \none
 
-insert-card = (v, s) !->
-  txt = switch DH.game.t
+insert-card = (v, node) !->
+  [txt, col, alt] = switch DH.game.t
     when \t, \c, \cj, \s, \sj
       if DH.game.t is \t and v[0] is \T
-        if v[1] is \0 then 'Excuse' else "Triumph #{v.substring(1)}"
+        if v[1] is \0 then ['Excuse', \gold, void]
+        else ["Triumph #{v.substring(1)}", \gold, v.substring(1)]
       else if (DH.game.t is \cj or DH.game.t is \sj) and v[1] is \W
-        if v[0] is \R then '&hearts;Red Joker&diams;'
-        else '&spades;Black Joker&clubs;'
+        if v[0] is \R then ['&hearts;Red Joker&diams;', \black, void]
+        else ['&spades;Black Joker&clubs;', \red, void]
       else
-        col = switch v[0]
-          when \S then '&spades;'
-          when \H then '&hearts;'
-          when \C then '&clubs;'
-          when \D then '&diams;'
-        "#{v.substring(1)}&nbsp;#col"
-    when \p then "Triumph #v"
+        [fam, col] = switch v[0]
+          when \S then ['&spades;', \black]
+          when \H then ['&hearts;', \red]
+          when \C then ['&clubs;', \black]
+          when \D then ['&diams;', \red]
+        ct = switch v[1]
+          when \K then "King<br/>#fam"
+          when \Q then "Queen<br/>#fam"
+          when \C then "Cav.<br/>#fam"
+          when \J then "Jack<br/>#fam"
+          else void
+        ["#{v.substring(1)}&nbsp;#fam", col, ct]
+    when \p then ["Triumph #v", \gold, v]
     when \u
       #
       # TODO
       #
       'not ready'
       #
-  q-sel s .innerHTML = ["<div class='card-#c'>#txt</div>" for c in ['top','body','bottom']].join('')
+  r = (c) ->
+    if c is \body then
+      if alt? then alt else txt
+    else txt
+  node
+    ..innerHTML = ["<div class='card-#c'>#{r c}</div>" for c in [\top \body \bottom]].join('')
+    ..setAttribute \style, "color:#col;border-color:#col"
 
 play-actions = (act) !-> switch act
   when \quit then DH.veil 'play-quit' on
@@ -94,25 +106,42 @@ play-actions = (act) !-> switch act
     q-sel '#deck-save-text' .value = JSON.stringify DH.game
     DH.show \save
   when \draw
-    dispile = q-sel '#deck-play-dispile'
-    if dispile.classList.contains \plh
-      dispile.classList
-        ..remove \plh
-        ..add \front
+    #
+    # TODO: dispile is only affected if no river, no hands, or direct selection
+    #
+    trg =
+      if not DH.game.rv and not DH.game.hds #or DH.game.sel is \dis
+        dispile = q-sel '#deck-play-dispile'
+        if dispile.classList.contains \plh
+          dispile.classList
+            ..remove \plh
+            ..add \front
+        #
+        # TODO: add to the discard stack
+        #
+        dispile
+      else
+        #
+        # TODO
+        #
+        'oups'
+        #
+    #
+    #
     c =
       if DH.store.s.length is 1 then
-        qSel '#deck-play-pot'
-          ..classList.remove \back
-          ..classList.add \plh
+        qSel('#deck-play-pot').classList
+          ..remove \back
+          ..add \plh
         qSel '#deck-play-draw' .setAttribute 'disabled', true
         DH.store.s[0]
       else
-        c = DH.store.s[DH.game.r[DH.store.p]]
-        DH.store.p += 1
+        c = DH.store.s[DH.game.r[DH.store.i]]
+        DH.store.i += 1
         DH.game.m.push {t: \draw}
         DH.store.s = DH.store.s.filter (e) ~> e != c
         c
-    insert-card c, '#deck-play-dispile'
+    insert-card c, trg
   when \reset then DH.veil 'play-reset' on
   when \resetno then DH.veil 'play-reset' off
   when \resetyes
