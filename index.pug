@@ -19,26 +19,22 @@ html
         span Deck Handler
         span The Third
       div
-        //
-        // TODO: direct access to play (v0.1.0)
-        //
         button(onclick="DH.action('create')") Create a game
-        //button(onclick="DH.action('play')") Play
         //
         // TODO: load disabled for the 0.1.0
         //
-        button(onclick="DH.action('load')",disabled) Load a game
+        button(onclick="DH.action('load')") Load a game
       include logo.pug
       div= version
     #deck-load-menu.screen
       h2 DH3 - load a game
-      input#deck-load-file(type='file')
+      input#deck-load-file(type='file', accept='.json')
       textarea#deck-load-text
-      #deck-load-error.err Can't load the game's data!
-      div
+      #deck-load-errf1.err The file must but a json!
+      #deck-load-errld.err Can't load the game's data!
+      .btn-lst
         button(onclick="DH.action('cancel')") Cancel
-        span &nbsp;
-        button(onclick="DH.action('load')") Load
+        button#deck-load-load(onclick="DH.action('load')") Load
     #deck-create-menu.screen
       h2 DH3 - create a new game
       div
@@ -91,6 +87,9 @@ html
       .btn-lst
         span |
         button(onclick="DH.action('quit')") Quit
+        //
+        // TODO: disable save, it's working but the load system don't
+        //
         button(onclick="DH.action('save')") Save
         //button(onclick="DH.action('reset')") Reset
         span |
